@@ -13,6 +13,6 @@ Built for learning, testing, and open-source contributions.
 ## Getting Started
 
 ```bash
-git clone https://github.com/yourusername/go-crud-server.git
+git clonehttps://github.com/Harsha975/go-lab-server.git
 cd go-crud-server
 go run cmd/server/main.go
