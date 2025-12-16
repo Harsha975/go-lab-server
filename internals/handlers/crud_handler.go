@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/harsha975/go-lab-server/internals/models"
 )
 
@@ -45,7 +46,8 @@ func UpdateOneuser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	idstr := r.PathValue("id")
+	vars := mux.Vars(r)
+	idstr := vars["id"]
 	// idr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
@@ -53,10 +55,22 @@ func UpdateOneuser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	path := r.URL.Path
-	fmt.Printf("id is %s", path)
+	// path := r.URL.Path
+	// fmt.Printf("id is %s", path)
 
-	User_data[id] = user
+	var user_ models.User
+	var ind int = -1
+	var return_user_id int
+	for ind, user_ = range User_data {
+		if user_.Id == id {
+			return_user_id = ind
+		}
+	}
+	if ind == -1 {
+		http.Error(w, "User not found", http.StatusBadRequest)
+		return
+	}
+	User_data[return_user_id] = user
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(User_data)
 }
@@ -70,14 +84,36 @@ func GetOneUser(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	idstr := r.PathValue("id")
+	vars := mux.Vars(r)
+	idstr := vars["id"]
+	//
+	// idstr := r.PathValue("id") only works with http.serveMux
+	fmt.Println(idstr)
+	if idstr == "" {
+		http.Error(w, "ID not provided", http.StatusBadRequest)
+		return
+	}
+
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	var user models.User
+	var ind int = -1
+	var return_user_id int
+	for ind, user = range User_data {
+		if user.Id == id {
+			return_user_id = ind
+		}
+	}
+	println(return_user_id)
+	if ind == -1 {
+		http.Error(w, "User not found", http.StatusBadRequest)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(User_data[id])
+	json.NewEncoder(w).Encode(User_data[return_user_id])
 }
 
 func DeleteOneUser(w http.ResponseWriter, r *http.Request) {
@@ -89,10 +125,15 @@ func DeleteOneUser(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	idstr := r.PathValue("id")
+	vars := mux.Vars(r)
+	idstr := vars["id"]
+	if idstr == "" {
+		http.Error(w, "ID not provided", http.StatusBadRequest)
+		return
+	}
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
-		http.Error(w, "User not found", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	User_data = append(User_data[:id], User_data[id+1:]...)
