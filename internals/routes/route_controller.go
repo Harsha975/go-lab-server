@@ -12,6 +12,7 @@ func RouteController() *mux.Router {
 	r.HandleFunc("/api/getOneUser/{id}", handlers.GetOneUser).Methods("GET")
 	r.HandleFunc("/api/createUser", handlers.CreateUser).Methods("POST")
 	r.HandleFunc("/api/updateUser/{id}", handlers.UpdateOneuser).Methods("PUT")
-	r.HandleFunc("/api/deleteOneUser/{id}", handlers.DeleteOneUser).Methods("Delete")
+	r.HandleFunc("/api/deleteOneUser/{id}", handlers.DeleteOneUser).Methods("DELETE")
+	r.HandleFunc("/api/deleteAllUsers", handlers.DeleteAllUsers).Methods("DELETE")
 	return r
 }
